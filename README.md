@@ -1,2 +1,1 @@
-# optimal-trade-entry
-automation entry position
+AI Agent - Youtube Consultant
