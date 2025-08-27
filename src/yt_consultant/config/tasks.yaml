@@ -1,17 +1,44 @@
-research_task:
+youtube_top_channel_researcher_task:
   description: >
-    Conduct a thorough research about {topic}
-    Make sure you find any interesting and relevant information given
-    the current year is {current_year}.
+    Conduct a thorough research to identify and analyze the top YouTube channels in the {topic} niche.
+    Make sure you find any interesting and relevant information similar to {channel_name} ( {channel_url} )
   expected_output: >
-    A list with 10 bullet points of the most relevant information about {topic}
-  agent: researcher
+    A list of the top 10 channels that are similar to {channel_name} ( {channel_url} ) with channel name, url, description, subscriber count, total views, country, category, and top video url.
+  agent: youtube_top_channel_researcher
+  output_file: output/top_channels_{topic}.json
 
-reporting_task:
+youtube_channel_analysis_task:
   description: >
-    Review the context you got and expand each topic into a full section for a report.
-    Make sure the report is detailed and contains any and all relevant information.
+    Analyze the given list of YouTube channels and provide insights on their performance and growth opportunities.
+    Use the provided analysis report to identify trends, strengths, weaknesses, and areas for improvement.
   expected_output: >
-    A fully fledged report with the main topics, each with a full section of information.
-    Formatted as markdown without '```'
-  agent: reporting_analyst
+    A detailed analysis report highlighting key performance metrics, growth opportunities, and actionable insights for each channel.
+  agent: youtube_channel_analyst
+  output_file: output/channel_analysis_{topic}.md
+
+youtube_channel_consultant_task:
+  description: >
+    Provide strategic advice to optimize YouTube channel performance and growth for {channel_name} ( {channel_url} )
+    using the given analysis report.
+  expected_output: >
+    A comprehensive strategy document with tailored recommendations for content creation, audience engagement, SEO optimization, and monetization.
+  agent: youtube_channel_consultant
+  output_file: output/channel_consultant_{channel_name}.md
+
+# research_task:
+#   description: >
+#     Conduct a thorough research about {topic}
+#     Make sure you find any interesting and relevant information given
+#     the current year is {current_year}.
+#   expected_output: >
+#     A list with 10 bullet points of the most relevant information about {topic}
+#   agent: researcher
+
+# reporting_task:
+#   description: >
+#     Review the context you got and expand each topic into a full section for a report.
+#     Make sure the report is detailed and contains any and all relevant information.
+#   expected_output: >
+#     A fully fledged report with the main topics, each with a full section of information.
+#     Formatted as markdown without '```'
+#   agent: reporting_analyst
