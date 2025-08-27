@@ -6,6 +6,23 @@ from typing import List
 # you can use the @before_kickoff and @after_kickoff decorators
 # https://docs.crewai.com/concepts/crews#example-crew-class-with-decorators
 
+from crewai_tools import SerperDevTool
+from pydantic import BaseModel, Field
+
+class YoutubeChanelResearch(BaseModel):
+    channel_name: str = Field(description="The name of the YouTube channel")
+    channel_url: str = Field(description="The URL of the YouTube channel")
+    subscribers: str = Field(description="The number of subscribers the channel has")
+    total_videos: str = Field(description="The total number of videos on the channel")
+    total_views: str = Field(description="The total number of views the channel has")
+    description: str = Field(description="A brief description of the channel")
+    country: str = Field(description="The country where the channel is based")
+    category: str = Field(description="The category of the channel (e.g., Education, Entertainment, etc.)")
+    top_videos: List[str] = Field(description="A list of the top 5 videos on the channel with their titles and URLs")
+
+class YoutubeChannelResearchList(BaseModel):
+    channels: List[YoutubeChanelResearch] = Field(description="A list of YouTube channel research results")
+
 @CrewBase
 class YtConsultant():
     """YtConsultant crew"""
@@ -13,52 +30,61 @@ class YtConsultant():
     agents: List[BaseAgent]
     tasks: List[Task]
 
-    # Learn more about YAML configuration files here:
-    # Agents: https://docs.crewai.com/concepts/agents#yaml-configuration-recommended
-    # Tasks: https://docs.crewai.com/concepts/tasks#yaml-configuration-recommended
+    @agent
+    def youtube_top_channel_researcher(self) -> Agent:
+        """Agent that researches top YouTube channels"""
+        return Agent(
+            config=self.agents_config['youtube_top_channel_researcher'],
+            tools=[SerperDevTool()],
+            verbose=True
+        )
     
-    # If you would like to add tools to your agents, you can learn more about it here:
-    # https://docs.crewai.com/concepts/agents#agent-tools
     @agent
-    def researcher(self) -> Agent:
+    def youtube_channel_analyst(self) -> Agent:
+        """Agent that analyzes YouTube channels"""
         return Agent(
-            config=self.agents_config['researcher'], # type: ignore[index]
+            config=self.agents_config['youtube_channel_analyst'],
             verbose=True
         )
-
+    
     @agent
-    def reporting_analyst(self) -> Agent:
+    def youtube_channel_consultant(self) -> Agent:
+        """Agent that provides consulting on YouTube channels"""
         return Agent(
-            config=self.agents_config['reporting_analyst'], # type: ignore[index]
+            config=self.agents_config['youtube_channel_consultant'],
             verbose=True
         )
-
-    # To learn more about structured task outputs,
-    # task dependencies, and task callbacks, check out the documentation:
-    # https://docs.crewai.com/concepts/tasks#overview-of-a-task
+    
     @task
-    def research_task(self) -> Task:
+    def research_top_channel_researcher_task(self) -> Task:
+        """Task to research top YouTube channels"""
         return Task(
-            config=self.tasks_config['research_task'], # type: ignore[index]
+            config=self.tasks_config['youtube_top_channel_researcher_task'],
+            output_pydantic=YoutubeChannelResearchList
         )
-
+    
     @task
-    def reporting_task(self) -> Task:
+    def youtube_channel_analyst_task(self) -> Task:
+        """Task to analyze YouTube channels"""
         return Task(
-            config=self.tasks_config['reporting_task'], # type: ignore[index]
-            output_file='report.md'
+            config=self.tasks_config['youtube_channel_analyst_task'],
         )
-
+    
+    @task
+    def youtube_channel_consultant_task(self) -> Task:
+        """Task to provide consulting on YouTube channels"""
+        return Task(
+            config=self.tasks_config['youtube_channel_consultant_task'],
+        )
+    
     @crew
     def crew(self) -> Crew:
-        """Creates the YtConsultant crew"""
-        # To learn how to add knowledge sources to your crew, check out the documentation:
-        # https://docs.crewai.com/concepts/knowledge#what-is-knowledge
-
+        """Define the crew process"""
         return Crew(
-            agents=self.agents, # Automatically created by the @agent decorator
-            tasks=self.tasks, # Automatically created by the @task decorator
+            agents=self.agents,
+            tasks=self.tasks,
             process=Process.sequential,
-            verbose=True,
-            # process=Process.hierarchical, # In case you wanna use that instead https://docs.crewai.com/how-to/Hierarchical/
+            verbose=True
         )
+
+
